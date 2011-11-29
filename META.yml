@@ -1,0 +1,43 @@
+---
+abstract: 'Sinatra-ish Simple and Clear web application framework'
+author:
+  - 'Masahiro Nagano <kazeburo {at} gmail.com>'
+build_requires:
+  ExtUtils::MakeMaker: 6.42
+  Test::More: 0
+configure_requires:
+  ExtUtils::MakeMaker: 6.42
+distribution_type: module
+generated_by: 'Module::Install version 1.00'
+license: perl
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+name: Kossy
+no_index:
+  directory:
+    - inc
+    - t
+    - xt
+requires:
+  Class::Accessor::Lite: 0
+  Cwd: 0
+  Data::Section::Simple: 0
+  File::Basename: 0
+  HTML::FillInForm::Lite: 0
+  JSON: 0
+  Number::Format: 0
+  Plack: 0
+  Plack::Middleware::ReverseProxy: 0
+  Plack::Middleware::Static: 0
+  Router::Simple: 0
+  Scalar::Util: 0
+  Test::More: 0.88
+  Text::Xslate: 1.1003
+  Text::Xslate::Bridge::TT2Like: 0
+  Try::Tiny: 0.09
+  parent: 0
+resources:
+  license: http://dev.perl.org/licenses/
+  repository: git://github.com/kazeburo/Kossy.git
+version: 0.05

@@ -1,0 +1,18 @@
+Revision history for Perl extension Kossy
+
+0.05    Tue Nov 29 17:43:51 2011
+        - release to CPAN
+
+0.04    Tue Nov 29 01:04:55 2011
+        - addes Assets for setup
+
+0.03    Mon Nov 28 19:20:09 2011
+        - render_json security staff.
+        - added document
+        - added router method for dispach other than GET and POST
+
+0.02    Fri Nov 11 10:35:14 2011
+        - added Number::Format to Xslate default functions.
+
+0.01    Fri Nov 11 10:35:14 2011
+        - original version
