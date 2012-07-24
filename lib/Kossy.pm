@@ -19,7 +19,7 @@ use Class::Accessor::Lite (
 use base qw/Exporter/;
 
 
-our $VERSION = '0.10';
+our $VERSION = '0.11';
 our @EXPORT = qw/new root_dir psgi build_app _router _connect get post router filter _wrap_filter/;
 
 sub new {
@@ -429,7 +429,10 @@ sub param_raw {
 sub uri_for {
      my($self, $path, $args) = @_;
      my $uri = $self->base;
-     $uri->path($path);
+     my $base = $uri->path eq "/"
+              ? ""
+              : $uri->path;
+     $uri->path( $base . $path );
      $uri->query_form(@$args) if $args;
      $uri;
 }
