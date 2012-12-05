@@ -27,7 +27,7 @@ requires:
   Data::Section::Simple: 0
   File::Basename: 0
   File::ShareDir: 0
-  HTML::FillInForm::Lite: 0
+  HTML::FillInForm::Lite: 1.11
   JSON: 0
   Number::Format: 0
   Plack: 0
@@ -36,11 +36,11 @@ requires:
   Router::Simple: 0
   Scalar::Util: 0
   Test::More: 0.88
-  Text::Xslate: 1.1003
+  Text::Xslate: 1.6001
   Text::Xslate::Bridge::TT2Like: 0
   Try::Tiny: 0.09
   parent: 0
 resources:
   license: http://dev.perl.org/licenses/
   repository: git://github.com/kazeburo/Kossy.git
-version: 0.12
+version: 0.13
