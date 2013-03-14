@@ -68,6 +68,7 @@ sub check {
         if ( ref($rule->[$i+1]) && ref($rule->[$i+1]) eq 'HASH' ) {
             if ( $param !~ m!^@! && !$VALIDATOR{NOT_NULL}->($req,$vals->[0])  && exists $rule->[$i+1]->{default} ) {
                 my $default = $rule->[$i+1]->{default};
+                $default = $default->() if ref($default) && ref($default) eq 'CODE';
                 $vals = [$default];
             }
             $constraints = $rule->[$i+1]->{rule};
@@ -203,7 +204,7 @@ Kossy::Validator - form validator
   my $result = Kossy::Validator->check($req, [
         'q' => [['NOT_NULL','query must be defined']],
         'level' => {
-            default => 'M',
+            default => 'M', # or sub { 'M' }
             rule => [
                 [['CHOICE',qw/L M Q H/],'invalid level char'],
             ],
