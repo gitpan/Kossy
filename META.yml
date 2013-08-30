@@ -28,6 +28,8 @@ requires:
   File::Basename: 0
   File::ShareDir: 0
   HTML::FillInForm::Lite: 1.11
+  HTTP::Message: 0
+  Hash::MultiValue: 0
   JSON: 0
   Number::Format: 0
   Plack: 0
@@ -43,4 +45,4 @@ requires:
 resources:
   license: http://dev.perl.org/licenses/
   repository: git://github.com/kazeburo/Kossy.git
-version: 0.18
+version: 0.19
