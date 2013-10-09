@@ -31,6 +31,7 @@ requires:
   HTTP::Message: 0
   Hash::MultiValue: 0
   JSON: 0
+  Kossy::Validator: 0.01
   Number::Format: 0
   Plack: 0
   Plack::Middleware::ReverseProxy: 0
@@ -45,4 +46,4 @@ requires:
 resources:
   license: http://dev.perl.org/licenses/
   repository: git://github.com/kazeburo/Kossy.git
-version: 0.19
+version: 0.20
