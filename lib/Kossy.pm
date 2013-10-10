@@ -18,7 +18,7 @@ use Class::Accessor::Lite (
 );
 use base qw/Exporter/;
 
-our $VERSION = '0.20';
+our $VERSION = '0.21';
 our @EXPORT = qw/new root_dir psgi build_app _router _connect get post router filter _wrap_filter/;
 
 sub new {
@@ -436,6 +436,14 @@ sub param_raw {
     my $key = shift;
     return $self->parameters_raw->{$key} unless wantarray;
     return $self->parameters_raw->get_all($key);
+}
+
+sub base {
+    my $self = shift;
+    $self->{_base} ||= {};
+    my $base = $self->_uri_base;
+    $self->{_base}->{$base} ||= $self->SUPER::base;
+    $self->{_base}->{$base}->clone;
 }
 
 sub uri_for {
