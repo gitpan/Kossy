@@ -1,4 +1,5 @@
 .gitignore
+.travis.yml
 Changes
 inc/Module/Install.pm
 inc/Module/Install/AuthorTests.pm

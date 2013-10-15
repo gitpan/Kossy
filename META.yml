@@ -36,7 +36,7 @@ requires:
   Plack: 0
   Plack::Middleware::ReverseProxy: 0
   Plack::Middleware::Static: 0
-  Router::Simple: 0
+  Router::Boom: 0.05
   Scalar::Util: 0
   Test::More: 0.88
   Text::Xslate: 1.6001
@@ -46,4 +46,4 @@ requires:
 resources:
   license: http://dev.perl.org/licenses/
   repository: git://github.com/kazeburo/Kossy.git
-version: 0.21
+version: 0.22

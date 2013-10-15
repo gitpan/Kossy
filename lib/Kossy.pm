@@ -5,20 +5,20 @@ use warnings;
 use utf8;
 use Carp qw//;
 use Scalar::Util qw//;
-use Router::Simple;
 use Cwd qw//;
 use File::Basename qw//;
 use Text::Xslate;
 use HTML::FillInForm::Lite qw//;
 use Try::Tiny;
 use Encode;
+use Router::Boom;
 use Class::Accessor::Lite (
     new => 0,
     rw => [qw/root_dir/]
 );
 use base qw/Exporter/;
 
-our $VERSION = '0.21';
+our $VERSION = '0.22';
 our @EXPORT = qw/new root_dir psgi build_app _router _connect get post router filter _wrap_filter/;
 
 sub new {
@@ -53,8 +53,8 @@ sub build_app {
     my $self = shift;
 
     #router
-    my $router = Router::Simple->new;
-    $router->connect(@{$_}) for @{$self->_router};
+    my $router = Router::Boom->new;
+    $router->add($_ => $self->_router->{$_} ) for keys %{$self->_router};
 
     #xslate
     my $fif = HTML::FillInForm::Lite->new();
@@ -75,26 +75,36 @@ sub build_app {
 
     sub {
         my $env = shift;
-        my $c = Kossy::Connection->new({
-            tx => $tx,
-            req => Kossy::Request->new($env),
-            res => Kossy::Response->new(200),
-            stash => {},
-        });
-        $c->res->content_type('text/html; charset=UTF-8');
-        my $match = try {
-            local $env->{PATH_INFO} = Encode::decode_utf8( $env->{PATH_INFO},  Encode::FB_CROAK | Encode::LEAVE_SRC );
-            $router->match($env)
-        }
-        catch {
-            $c->halt(400,'unexpected character in request');
-        };
+        try {
+            my $c = Kossy::Connection->new({
+                tx => $tx,
+                req => Kossy::Request->new($env),
+                res => Kossy::Response->new(200),
+                stash => {},
+            });
+            $c->res->content_type('text/html; charset=UTF-8');
+            my ($match,$args) = try {
+                my $path_info = Encode::decode_utf8( $env->{PATH_INFO},  Encode::FB_CROAK | Encode::LEAVE_SRC );
+                my @match = $router->match($path_info);
+                if ( !@match ) {
+                    $c->halt(404);
+                }
 
-        if ( $match ) {
-            my $code = delete $match->{action};
-            my $filters = delete $match->{filter};
-            $c->args($match);
-
+                my $method = uc $env->{REQUEST_METHOD};
+                if ( !exists $match[0]->{$method}) {
+                    $c->halt(405);
+                }
+                return ($match[0]->{$method},$match[1]);
+            } catch {
+                if ( ref $_ && ref $_ eq 'Kossy::Exception' ) {
+                    die $_; #rethrow
+                }
+                $c->halt(400,'unexpected character in request');
+            };
+            
+            my $code = $match->{__action__};
+            my $filters = $match->{__filter__} || [];
+            $c->args($args);
             my $app = sub {
                 my ($self, $c) = @_;
                 my $response;
@@ -119,23 +129,21 @@ sub build_app {
                 }
                 $response;
             };
-
+            
             for my $filter ( reverse @$filters ) {
                 $app = $self->_wrap_filter($filter,$app);
             }
-
-            return try {
-                $app->($self, $c)->finalize;
-            } catch {
-                if ( ref $_ && ref $_ eq 'Kossy::Exception' ) {
-                    return $_->response;
-                }
-                die $_;
-            };
-        }
-        return Kossy::Exception->new(404)->response;
+            # do all
+            $app->($self, $c)->finalize;
+        } catch {
+            if ( ref $_ && ref $_ eq 'Kossy::Exception' ) {
+                return $_->response;
+            }
+            die $_;
+        };
     };
 }
+
 
 
 my $_ROUTER={};
@@ -143,11 +151,8 @@ sub _router {
     my $klass = shift;
     my $class = ref $klass ? ref $klass : $klass; 
     if ( !$_ROUTER->{$class} ) {
-        $_ROUTER->{$class} = [];
+        $_ROUTER->{$class} = {};
     }    
-    if ( @_ ) {
-        push @{ $_ROUTER->{$class} }, [@_];
-    }
     $_ROUTER->{$class};
 }
 
@@ -159,11 +164,12 @@ sub _connect {
         $code = $filter;
         $filter = [];
     }
-    $class->_router(
-        $pattern,
-        { action => $code, filter => $filter },
-        { method => [ map { uc $_ } @$methods ] } 
-    );
+    for my $method ( @$methods ) {
+        $class->_router->{$pattern}->{$method} = {
+            __action__ => $code,
+            __filter__ => $filter
+        };
+    }
 }
 
 sub get {
