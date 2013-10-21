@@ -3,6 +3,7 @@ abstract: 'Sinatra-ish Simple and Clear web application framework'
 author:
   - 'Masahiro Nagano <kazeburo {at} gmail.com>'
 build_requires:
+  Cookie::Baker: 0
   ExtUtils::MakeMaker: 6.36
   Test::More: 0
 configure_requires:
@@ -28,6 +29,7 @@ requires:
   File::Basename: 0
   File::ShareDir: 0
   HTML::FillInForm::Lite: 1.11
+  HTTP::Headers::Fast: 0.16
   HTTP::Message: 0
   Hash::MultiValue: 0
   JSON: 0
@@ -46,4 +48,4 @@ requires:
 resources:
   license: http://dev.perl.org/licenses/
   repository: git://github.com/kazeburo/Kossy.git
-version: 0.22
+version: 0.23
