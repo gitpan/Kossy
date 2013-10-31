@@ -15,7 +15,7 @@ requires 'Text::Xslate::Bridge::TT2Like';
 requires 'HTML::FillInForm::Lite'            => '1.11';
 requires 'Try::Tiny'                         => '0.09';
 requires 'Class::Accessor::Lite';
-requires 'JSON';
+requires 'JSON', 2;
 requires 'Number::Format';
 requires 'Data::Section::Simple';
 requires 'Test::More'                        => '0.88';
@@ -24,12 +24,14 @@ requires 'HTTP::Message';
 requires 'Hash::MultiValue';
 requires 'Kossy::Validator'                  => '0.01';
 requires 'HTTP::Headers::Fast'               => '0.16';
+requires 'HTTP::MultiPartParser';
+requires 'URL::Encode';
+requires 'Cookie::Baker';
 
 tests 't/*.t t/*/*.t';
 author_tests 'xt';
 
 test_requires 'Test::More';
-test_requires 'Cookie::Baker';
 
 install_share 'share';
 install_script 'kossy-setup';

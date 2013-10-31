@@ -18,7 +18,7 @@ use Class::Accessor::Lite (
 );
 use base qw/Exporter/;
 
-our $VERSION = '0.23';
+our $VERSION = '0.24';
 our @EXPORT = qw/new root_dir psgi build_app _router _connect get post router filter _wrap_filter/;
 
 sub new {
@@ -40,10 +40,17 @@ sub new {
 sub psgi {
     my $self = shift;
     if ( ! ref $self ) {
-        my $root_dir = shift;
-        my @caller = caller;
-        $root_dir ||= File::Basename::dirname( Cwd::realpath($caller[1]) );
-        $self = $self->new($root_dir);
+        my %args;
+        if ( @_ < 2 ) {
+            my $root_dir = shift;
+            my @caller = caller;
+            $root_dir ||= File::Basename::dirname( Cwd::realpath($caller[1]) );
+            $args{root_dir} = $root_dir;
+        }
+        else {
+            %args = @_;
+        }
+        $self = $self->new(%args);
     }
 
     $self->build_app;
@@ -78,7 +85,7 @@ sub build_app {
         try {
             my $c = Kossy::Connection->new({
                 tx => $tx,
-                req => Kossy::Request->new($env),
+                req => Kossy::Request->new($env, (parse_json_body => $self->{parse_json_body}) ),
                 res => Kossy::Response->new(200, ['Content-Type' => 'text/html; charset=UTF-8']),
                 stash => {},
             });
@@ -387,49 +394,134 @@ use parent qw/Plack::Request/;
 use Hash::MultiValue;
 use Encode;
 use Kossy::Validator;
+use Kossy::BodyParser;
+use Kossy::BodyParser::UrlEncoded;
+use Kossy::BodyParser::MultiPart;
+use Kossy::BodyParser::JSON;
+
+sub new {
+    my($class, $env, %opts) = @_;
+    Carp::croak(q{$env is required})
+        unless defined $env && ref($env) eq 'HASH';
+
+    bless {
+        %opts,
+        env => $env,
+    }, $class;
+}
+
+sub request_body_parser {
+    my $self = shift;
+    unless (exists $self->{request_body_parser}) {
+        $self->{request_body_parser} = $self->_build_request_body_parser();
+    }
+    return $self->{request_body_parser};
+}
+
+sub _build_request_body_parser {
+    my $self = shift;
+
+    my $parser = Kossy::BodyParser->new();
+    $parser->register(
+        'application/x-www-form-urlencoded',
+        'Kossy::BodyParser::UrlEncoded'
+    );
+    $parser->register(
+        'multipart/form-data',
+        'Kossy::BodyParser::MultiPart'
+    );
+    if ( $self->{parse_json_body} ) {
+            $parser->register(
+                'application/json',
+                'Kossy::BodyParser::JSON'
+            );
+    }
+    $parser;
+}
+
+sub _parse_request_body {
+    my $self = shift;
+    $self->request_body_parser->parse($self->env);
+}
+
+sub uploads {
+    my $self = shift;
+    unless ($self->env->{'kossy.request.upload_parameters'}) {
+        $self->_parse_request_body;
+    }
+    $self->env->{'plack.request.upload'} ||= 
+        Hash::MultiValue->new(@{$self->env->{'kossy.request.upload_parameters'}});
+}
 
 sub body_parameters {
     my ($self) = @_;
-    $self->{'kossy.body_parameters'} ||= $self->_decode_parameters($self->SUPER::body_parameters());
+    $self->env->{'kossy.request.body'} ||= $self->_decode_parameters(@{$self->_body_parameters()});
 }
 
 sub query_parameters {
     my ($self) = @_;
-    $self->{'kossy.query_parameters'} ||= $self->_decode_parameters($self->SUPER::query_parameters());
+    $self->env->{'kossy.request.query'} ||= $self->_decode_parameters(@{$self->_query_parameters()});
+}
+
+sub parameters {
+    my $self = shift;
+    $self->env->{'kossy.request.merged'} ||= do {
+        Hash::MultiValue->new(
+            $self->query_parameters->flatten,
+            $self->body_parameters->flatten,            
+        );
+    };
 }
 
 sub _decode_parameters {
-    my ($self, $stuff) = @_;
-
-    my @flatten = $stuff->flatten();
+    my ($self, @flatten) = @_;
     my @decoded;
     while ( my ($k, $v) = splice @flatten, 0, 2 ) {
         push @decoded, Encode::decode_utf8($k), Encode::decode_utf8($v);
     }
     return Hash::MultiValue->new(@decoded);
 }
-sub parameters {
+
+sub _body_parameters {
     my $self = shift;
-    $self->env->{'kossy.request.merged'} ||= do {
-        my $query = $self->query_parameters;
-        my $body  = $self->body_parameters;
-        Hash::MultiValue->new( $query->flatten, $body->flatten );
-    };
+    unless ($self->env->{'kossy.request.body_parameters'}) {
+        $self->_parse_request_body;
+    }
+    return $self->env->{'kossy.request.body_parameters'};    
+}
+
+sub _query_parameters {
+    my $self = shift;
+    unless ( $self->env->{'kossy.request.query_parameter'} ) {
+        $self->env->{'kossy.request.query_parameters'} = 
+            URL::Encode::url_params_flat($self->env->{'QUERY_STRING'});
+    }
+    return $self->env->{'kossy.request.query_parameters'};
 }
 
 sub body_parameters_raw {
-    shift->SUPER::body_parameters();
+    my $self = shift;
+    unless ($self->env->{'plack.request.body'}) {
+        $self->env->{'plack.request.body'} = Hash::MultiValue->new(@{$self->_body_parameters});
+    }
+    return $self->env->{'plack.request.body'};
 }
+
 sub query_parameters_raw {
-    shift->SUPER::query_parameters();
+    my $self = shift;
+    unless ($self->env->{'plack.request.query'}) {
+        $self->env->{'plack.request.query'} = Hash::MultiValue->new(@{$self->_query_parameters});
+    }
+    return $self->env->{'plack.request.query'};
 }
 
 sub parameters_raw {
     my $self = shift;
     $self->env->{'plack.request.merged'} ||= do {
-        my $query = $self->SUPER::query_parameters();
-        my $body  = $self->SUPER::body_parameters();
-        Hash::MultiValue->new( $query->flatten, $body->flatten );
+        Hash::MultiValue->new(
+            @{$self->_query_parameters},
+            @{$self->_body_parameters}
+        );
     };
 }
 
@@ -476,6 +568,7 @@ use warnings;
 use parent qw/Plack::Response/;
 use Encode;
 use HTTP::Headers::Fast;
+use Cookie::Baker;
 
 sub headers {
     my $self = shift;
@@ -520,7 +613,7 @@ sub finalize {
     });
 
     while (my($name, $val) = each %{$self->cookies}) {
-        my $cookie = $self->_bake_cookie($name, $val);
+        my $cookie = bake_cookie($name, $val);
         push @headers, 'Set-Cookie' => $cookie;
     }
 
