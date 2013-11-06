@@ -1,10 +1,15 @@
 .gitignore
 .travis.yml
 Changes
+cpanfile
+inc/Module/CPANfile.pm
+inc/Module/CPANfile/Environment.pm
+inc/Module/CPANfile/Result.pm
 inc/Module/Install.pm
 inc/Module/Install/AuthorTests.pm
 inc/Module/Install/Base.pm
 inc/Module/Install/Can.pm
+inc/Module/Install/CPANfile.pm
 inc/Module/Install/Fetch.pm
 inc/Module/Install/Makefile.pm
 inc/Module/Install/Metadata.pm
@@ -22,6 +27,7 @@ lib/Kossy/BodyParser/OctetStream.pm
 lib/Kossy/BodyParser/UrlEncoded.pm
 Makefile.PL
 MANIFEST			This list of files
+META.json
 META.yml
 README
 share/public/css/bootstrap-responsive.min.css

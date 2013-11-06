@@ -6,10 +6,10 @@ build_requires:
   ExtUtils::MakeMaker: 6.36
   Test::More: 0
 configure_requires:
+  CPAN::Meta: 0
   ExtUtils::MakeMaker: 6.36
-distribution_type: module
-dynamic_config: 1
-generated_by: 'Module::Install version 1.06'
+dynamic_config: 0
+generated_by: 'Module::Install version 1.06, CPAN::Meta::Converter version 2.132830'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -36,7 +36,7 @@ requires:
   JSON: 2
   Kossy::Validator: 0.01
   Number::Format: 0
-  Plack: 0
+  Plack: 1.0029
   Plack::Middleware::ReverseProxy: 0
   Plack::Middleware::Static: 0
   Router::Boom: 0.05
@@ -50,4 +50,4 @@ requires:
 resources:
   license: http://dev.perl.org/licenses/
   repository: git://github.com/kazeburo/Kossy.git
-version: 0.24
+version: 0.25
