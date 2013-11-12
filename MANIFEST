@@ -25,6 +25,10 @@ lib/Kossy/BodyParser/JSON.pm
 lib/Kossy/BodyParser/MultiPart.pm
 lib/Kossy/BodyParser/OctetStream.pm
 lib/Kossy/BodyParser/UrlEncoded.pm
+lib/Kossy/Connection.pm
+lib/Kossy/Exception.pm
+lib/Kossy/Request.pm
+lib/Kossy/Response.pm
 Makefile.PL
 MANIFEST			This list of files
 META.json
