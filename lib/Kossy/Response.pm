@@ -7,7 +7,7 @@ use Encode;
 use HTTP::Headers::Fast;
 use Cookie::Baker;
 
-our $VERSION = '0.27';
+our $VERSION = '0.28';
 
 sub headers {
     my $self = shift;
@@ -41,7 +41,6 @@ sub _body {
 sub finalize {
     my $self = shift;
     Carp::croak "missing status" unless $self->status();
-
     my @headers;
     $self->headers->scan(sub{
         my ($k,$v) = @_;
