@@ -20,11 +20,6 @@ inc/Module/Install/Win32.pm
 inc/Module/Install/WriteAll.pm
 kossy-setup
 lib/Kossy.pm
-lib/Kossy/BodyParser.pm
-lib/Kossy/BodyParser/JSON.pm
-lib/Kossy/BodyParser/MultiPart.pm
-lib/Kossy/BodyParser/OctetStream.pm
-lib/Kossy/BodyParser/UrlEncoded.pm
 lib/Kossy/Connection.pm
 lib/Kossy/Exception.pm
 lib/Kossy/Request.pm

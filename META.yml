@@ -29,9 +29,9 @@ requires:
   File::Basename: 0
   File::ShareDir: 0
   HTML::FillInForm::Lite: 1.11
+  HTTP::Entity::Parser: 0.03
   HTTP::Headers::Fast: 0.16
   HTTP::Message: 0
-  HTTP::MultiPartParser: 0
   Hash::MultiValue: 0
   JSON: 2
   Kossy::Validator: 0.01
@@ -45,9 +45,9 @@ requires:
   Text::Xslate: 1.6001
   Text::Xslate::Bridge::TT2Like: 0
   Try::Tiny: 0.09
-  URL::Encode: 0
+  WWW::Form::UrlEncoded: 0.03
   parent: 0
 resources:
   license: http://dev.perl.org/licenses/
   repository: git://github.com/kazeburo/Kossy.git
-version: 0.28
+version: 0.30
