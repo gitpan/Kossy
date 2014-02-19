@@ -7,9 +7,9 @@ use Hash::MultiValue;
 use Encode;
 use Kossy::Validator;
 use HTTP::Entity::Parser;
-use WWW::Form::UrlEncoded qw/parse_urlencoded/;
+use WWW::Form::UrlEncoded qw/parse_urlencoded build_urlencoded/;
 
-our $VERSION = '0.28';
+our $VERSION = '0.32';
 
 sub new {
     my($class, $env, %opts) = @_;
@@ -176,7 +176,7 @@ sub uri_for {
               ? ""
               : $uri->path;
      $uri->path( $base . $path );
-     $uri->query_form(@$args) if $args;
+     $uri->query(build_urlencoded($args)) if $args;
      $uri;
 }
 

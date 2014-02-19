@@ -42,7 +42,7 @@
             "File::Basename" : "0",
             "File::ShareDir" : "0",
             "HTML::FillInForm::Lite" : "1.11",
-            "HTTP::Entity::Parser" : "0.03",
+            "HTTP::Entity::Parser" : "0.10",
             "HTTP::Headers::Fast" : "0.16",
             "HTTP::Message" : "0",
             "Hash::MultiValue" : "0",
@@ -58,7 +58,8 @@
             "Text::Xslate" : "1.6001",
             "Text::Xslate::Bridge::TT2Like" : "0",
             "Try::Tiny" : "0.09",
-            "WWW::Form::UrlEncoded" : "0.03",
+            "WWW::Form::UrlEncoded" : "0.13",
+            "WWW::Form::UrlEncoded::XS" : "0.13",
             "parent" : "0"
          }
       },
@@ -78,5 +79,5 @@
          "url" : "git://github.com/kazeburo/Kossy.git"
       }
    },
-   "version" : "0.31"
+   "version" : "0.32"
 }
