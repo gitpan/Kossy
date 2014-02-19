@@ -9,7 +9,7 @@ use Kossy::Validator;
 use HTTP::Entity::Parser;
 use WWW::Form::UrlEncoded qw/parse_urlencoded build_urlencoded/;
 
-our $VERSION = '0.32';
+our $VERSION = '0.33';
 
 sub new {
     my($class, $env, %opts) = @_;
@@ -59,6 +59,12 @@ sub _build_request_body_parser {
 
 sub _parse_request_body {
     my $self = shift;
+    if ( !$self->env->{CONTENT_TYPE} ) {
+        $self->env->{'kossy.request.body_parameters'} = [];
+        $self->env->{'plack.request.upload'} = Hash::MultiValue->new();
+        return;
+    }
+
     my ($params,$uploads) = $self->request_body_parser->parse($self->env);
     $self->env->{'kossy.request.body_parameters'} = $params;
 
@@ -100,9 +106,9 @@ sub parameters {
 }
 
 sub _decode_parameters {
-    my ($self, @flatten) = @_;
+    my $self = shift;
     my @decoded;
-    while ( my ($k, $v) = splice @flatten, 0, 2 ) {
+    while ( my ($k, $v) = splice @_, 0, 2 ) {
         push @decoded, Encode::decode_utf8($k), Encode::decode_utf8($v);
     }
     return Hash::MultiValue->new(@decoded);
@@ -115,10 +121,9 @@ sub _body_parameters {
     }
     return $self->env->{'kossy.request.body_parameters'};    
 }
-
 sub _query_parameters {
     my $self = shift;
-    unless ( $self->env->{'kossy.request.query_parameter'} ) {
+    unless ( $self->env->{'kossy.request.query_parameters'} ) {
         $self->env->{'kossy.request.query_parameters'} = 
             [parse_urlencoded($self->env->{'QUERY_STRING'})];
     }

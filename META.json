@@ -42,7 +42,7 @@
             "File::Basename" : "0",
             "File::ShareDir" : "0",
             "HTML::FillInForm::Lite" : "1.11",
-            "HTTP::Entity::Parser" : "0.10",
+            "HTTP::Entity::Parser" : "0.11",
             "HTTP::Headers::Fast" : "0.16",
             "HTTP::Message" : "0",
             "Hash::MultiValue" : "0",
@@ -79,5 +79,5 @@
          "url" : "git://github.com/kazeburo/Kossy.git"
       }
    },
-   "version" : "0.32"
+   "version" : "0.33"
 }
