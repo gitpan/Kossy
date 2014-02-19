@@ -9,7 +9,7 @@ use Kossy::Validator;
 use HTTP::Entity::Parser;
 use WWW::Form::UrlEncoded qw/parse_urlencoded build_urlencoded/;
 
-our $VERSION = '0.33';
+our $VERSION = '0.34';
 
 sub new {
     my($class, $env, %opts) = @_;
@@ -180,8 +180,11 @@ sub uri_for {
      my $base = $uri->path eq "/"
               ? ""
               : $uri->path;
-     $uri->path( $base . $path );
-     $uri->query(build_urlencoded($args)) if $args;
+     my $query = '';
+     if ( $args ) {
+         $query = build_urlencoded($args);
+     }
+     $uri->path_query( $base . $path . (length $query ? "?$query" : ""));
      $uri;
 }
 
