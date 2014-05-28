@@ -41,7 +41,8 @@ t/01_new.t
 t/02_request_body_parser.t
 t/03_parameters.t
 t/04_params.t
-t/05_mount.t
+t/05_cookie.t
+t/06_mount.t
 t/MyApp.pm
 xt/01_podspell.t
 xt/03_pod.t

@@ -22,7 +22,7 @@ use Kossy::Connection;
 use Kossy::Request;
 use Kossy::Response;
 
-our $VERSION = '0.34';
+our $VERSION = '0.35';
 our @EXPORT = qw/new root_dir psgi build_app _router _connect get post router filter _wrap_filter/;
 
 sub new {
@@ -118,7 +118,8 @@ sub build_app {
             
             my $code = $match->{__action__};
             my $filters = $match->{__filter__} || [];
-            $c->args($args);
+            my %args = map { $_ => Encode::decode_utf8($args->{$_}) } keys %$args;
+            $c->args(\%args);
             my $app = sub {
                 my ($self, $c) = @_;
                 my $response;

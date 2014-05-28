@@ -7,7 +7,8 @@ use Hash::MultiValue;
 use Encode;
 use Kossy::Validator;
 use HTTP::Entity::Parser;
-use WWW::Form::UrlEncoded qw/parse_urlencoded build_urlencoded/;
+use WWW::Form::UrlEncoded qw/parse_urlencoded_arrayref build_urlencoded_utf8/;
+use Cookie::Baker;
 
 our $VERSION = '0.34';
 
@@ -28,6 +29,22 @@ sub new_response {
     Kossy::Response->new(@_);
 }
 
+sub cookies {
+    my $self = shift;
+
+    return {} unless $self->env->{HTTP_COOKIE};
+
+    # HTTP_COOKIE hasn't changed: reuse the parsed cookie
+    if (   $self->env->{'plack.cookie.parsed'}
+        && $self->env->{'plack.cookie.string'} eq $self->env->{HTTP_COOKIE}) {
+        return $self->env->{'plack.cookie.parsed'};
+    }
+
+    $self->env->{'plack.cookie.string'} = $self->env->{HTTP_COOKIE};
+    $self->env->{'plack.cookie.parsed'} = crush_cookie($self->env->{'plack.cookie.string'});
+}
+
+
 sub request_body_parser {
     my $self = shift;
     unless (exists $self->{request_body_parser}) {
@@ -36,25 +53,36 @@ sub request_body_parser {
     return $self->{request_body_parser};
 }
 
+my $default_parser = HTTP::Entity::Parser->new();
+$default_parser->register(
+    'application/x-www-form-urlencoded',
+    'HTTP::Entity::Parser::UrlEncoded'
+);
+$default_parser->register(
+    'multipart/form-data',
+    'HTTP::Entity::Parser::MultiPart'
+);
+
+my $json_parser = HTTP::Entity::Parser->new();
+$json_parser->register(
+    'application/x-www-form-urlencoded',
+    'HTTP::Entity::Parser::UrlEncoded'
+);
+$json_parser->register(
+    'multipart/form-data',
+    'HTTP::Entity::Parser::MultiPart'
+);
+$json_parser->register(
+    'application/json',
+    'HTTP::Entity::Parser::JSON'
+);
+
 sub _build_request_body_parser {
     my $self = shift;
-
-    my $parser = HTTP::Entity::Parser->new();
-    $parser->register(
-        'application/x-www-form-urlencoded',
-        'HTTP::Entity::Parser::UrlEncoded'
-    );
-    $parser->register(
-        'multipart/form-data',
-        'HTTP::Entity::Parser::MultiPart'
-    );
     if ( $self->env->{'kossy.request.parse_json_body'} ) {
-            $parser->register(
-                'application/json',
-                'HTTP::Entity::Parser::JSON'
-            );
+        return $json_parser;
     }
-    $parser;
+    $default_parser;
 }
 
 sub _parse_request_body {
@@ -87,12 +115,14 @@ sub uploads {
 
 sub body_parameters {
     my ($self) = @_;
-    $self->env->{'kossy.request.body'} ||= $self->_decode_parameters(@{$self->_body_parameters()});
+    $self->env->{'kossy.request.body'} ||= 
+        Hash::MultiValue->new(map { Encode::decode_utf8($_) } @{$self->_body_parameters()});
 }
 
 sub query_parameters {
     my ($self) = @_;
-    $self->env->{'kossy.request.query'} ||= $self->_decode_parameters(@{$self->_query_parameters()});
+    $self->env->{'kossy.request.query'} ||= 
+        Hash::MultiValue->new(map { Encode::decode_utf8($_) } @{$self->_query_parameters()});
 }
 
 sub parameters {
@@ -103,15 +133,6 @@ sub parameters {
             $self->body_parameters->flatten,            
         );
     };
-}
-
-sub _decode_parameters {
-    my $self = shift;
-    my @decoded;
-    while ( my ($k, $v) = splice @_, 0, 2 ) {
-        push @decoded, Encode::decode_utf8($k), Encode::decode_utf8($v);
-    }
-    return Hash::MultiValue->new(@decoded);
 }
 
 sub _body_parameters {
@@ -125,7 +146,7 @@ sub _query_parameters {
     my $self = shift;
     unless ( $self->env->{'kossy.request.query_parameters'} ) {
         $self->env->{'kossy.request.query_parameters'} = 
-            [parse_urlencoded($self->env->{'QUERY_STRING'})];
+            parse_urlencoded_arrayref($self->env->{'QUERY_STRING'});
     }
     return $self->env->{'kossy.request.query_parameters'};
 }
@@ -182,7 +203,7 @@ sub uri_for {
               : $uri->path;
      my $query = '';
      if ( $args ) {
-         $query = build_urlencoded($args);
+         $query = build_urlencoded_utf8($args);
      }
      $uri->path_query( $base . $path . (length $query ? "?$query" : ""));
      $uri;

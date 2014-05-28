@@ -36,13 +36,14 @@
       "runtime" : {
          "requires" : {
             "Class::Accessor::Lite" : "0",
-            "Cookie::Baker" : "0",
+            "Cookie::Baker" : "0.03",
+            "Cookie::Baker::XS" : "0.03",
             "Cwd" : "0",
             "Data::Section::Simple" : "0",
             "File::Basename" : "0",
             "File::ShareDir" : "0",
             "HTML::FillInForm::Lite" : "1.11",
-            "HTTP::Entity::Parser" : "0.11",
+            "HTTP::Entity::Parser" : "0.12",
             "HTTP::Headers::Fast" : "0.16",
             "HTTP::Message" : "0",
             "Hash::MultiValue" : "0",
@@ -58,8 +59,8 @@
             "Text::Xslate" : "1.6001",
             "Text::Xslate::Bridge::TT2Like" : "0",
             "Try::Tiny" : "0.09",
-            "WWW::Form::UrlEncoded" : "0.13",
-            "WWW::Form::UrlEncoded::XS" : "0.13",
+            "WWW::Form::UrlEncoded" : "0.17",
+            "WWW::Form::UrlEncoded::XS" : "0.18",
             "parent" : "0"
          }
       },
