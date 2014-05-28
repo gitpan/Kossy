@@ -4,7 +4,7 @@
       "Masahiro Nagano <kazeburo {at} gmail.com>"
    ],
    "dynamic_config" : "0",
-   "generated_by" : "Module::Install version 1.06, CPAN::Meta::Converter version 2.132830",
+   "generated_by" : "Module::Install version 1.08, CPAN::Meta::Converter version 2.141170",
    "license" : [
       "perl_5"
    ],
@@ -53,14 +53,14 @@
             "Plack" : "1.0029",
             "Plack::Middleware::ReverseProxy" : "0",
             "Plack::Middleware::Static" : "0",
-            "Router::Boom" : "0.05",
+            "Router::Boom" : "1.01",
             "Scalar::Util" : "0",
             "Test::More" : "0.88",
-            "Text::Xslate" : "1.6001",
+            "Text::Xslate" : "v3.2.4",
             "Text::Xslate::Bridge::TT2Like" : "0",
             "Try::Tiny" : "0.09",
-            "WWW::Form::UrlEncoded" : "0.17",
-            "WWW::Form::UrlEncoded::XS" : "0.18",
+            "WWW::Form::UrlEncoded" : "0.19",
+            "WWW::Form::UrlEncoded::XS" : "0.19",
             "parent" : "0"
          }
       },
@@ -80,5 +80,5 @@
          "url" : "git://github.com/kazeburo/Kossy.git"
       }
    },
-   "version" : "0.34"
+   "version" : "0.37"
 }

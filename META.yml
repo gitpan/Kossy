@@ -3,17 +3,17 @@ abstract: 'Sinatra-ish Simple and Clear web application framework'
 author:
   - 'Masahiro Nagano <kazeburo {at} gmail.com>'
 build_requires:
-  ExtUtils::MakeMaker: 6.36
-  Test::More: 0
+  ExtUtils::MakeMaker: '6.36'
+  Test::More: '0'
 configure_requires:
-  CPAN::Meta: 0
-  ExtUtils::MakeMaker: 6.36
-dynamic_config: 0
-generated_by: 'Module::Install version 1.06, CPAN::Meta::Converter version 2.132830'
+  CPAN::Meta: '0'
+  ExtUtils::MakeMaker: '6.36'
+dynamic_config: '0'
+generated_by: 'Module::Install version 1.08, CPAN::Meta::Converter version 2.141170'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
-  version: 1.4
+  version: '1.4'
 name: Kossy
 no_index:
   directory:
@@ -22,34 +22,34 @@ no_index:
     - t
     - xt
 requires:
-  Class::Accessor::Lite: 0
-  Cookie::Baker: 0.03
-  Cookie::Baker::XS: 0.03
-  Cwd: 0
-  Data::Section::Simple: 0
-  File::Basename: 0
-  File::ShareDir: 0
-  HTML::FillInForm::Lite: 1.11
-  HTTP::Entity::Parser: 0.12
-  HTTP::Headers::Fast: 0.16
-  HTTP::Message: 0
-  Hash::MultiValue: 0
-  JSON: 2
-  Kossy::Validator: 0.01
-  Number::Format: 0
-  Plack: 1.0029
-  Plack::Middleware::ReverseProxy: 0
-  Plack::Middleware::Static: 0
-  Router::Boom: 0.05
-  Scalar::Util: 0
-  Test::More: 0.88
-  Text::Xslate: 1.6001
-  Text::Xslate::Bridge::TT2Like: 0
-  Try::Tiny: 0.09
-  WWW::Form::UrlEncoded: 0.17
-  WWW::Form::UrlEncoded::XS: 0.18
-  parent: 0
+  Class::Accessor::Lite: '0'
+  Cookie::Baker: '0.03'
+  Cookie::Baker::XS: '0.03'
+  Cwd: '0'
+  Data::Section::Simple: '0'
+  File::Basename: '0'
+  File::ShareDir: '0'
+  HTML::FillInForm::Lite: '1.11'
+  HTTP::Entity::Parser: '0.12'
+  HTTP::Headers::Fast: '0.16'
+  HTTP::Message: '0'
+  Hash::MultiValue: '0'
+  JSON: '2'
+  Kossy::Validator: '0.01'
+  Number::Format: '0'
+  Plack: '1.0029'
+  Plack::Middleware::ReverseProxy: '0'
+  Plack::Middleware::Static: '0'
+  Router::Boom: '1.01'
+  Scalar::Util: '0'
+  Test::More: '0.88'
+  Text::Xslate: v3.2.4
+  Text::Xslate::Bridge::TT2Like: '0'
+  Try::Tiny: '0.09'
+  WWW::Form::UrlEncoded: '0.19'
+  WWW::Form::UrlEncoded::XS: '0.19'
+  parent: '0'
 resources:
   license: http://dev.perl.org/licenses/
   repository: git://github.com/kazeburo/Kossy.git
-version: 0.34
+version: '0.37'
