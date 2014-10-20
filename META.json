@@ -4,7 +4,7 @@
       "Masahiro Nagano <kazeburo {at} gmail.com>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v1.0.0",
+   "generated_by" : "Minilla/v1.1.0",
    "license" : [
       "perl_5"
    ],
@@ -81,23 +81,27 @@
    "provides" : {
       "Kossy" : {
          "file" : "lib/Kossy.pm",
-         "version" : "0.38"
+         "version" : "0.39"
       },
       "Kossy::Connection" : {
          "file" : "lib/Kossy/Connection.pm",
-         "version" : "0.38"
+         "version" : "0.39"
       },
       "Kossy::Exception" : {
          "file" : "lib/Kossy/Exception.pm",
-         "version" : "0.38"
+         "version" : "0.39"
+      },
+      "Kossy::Headers" : {
+         "file" : "lib/Kossy/Headers.pm",
+         "version" : "0.39"
       },
       "Kossy::Request" : {
          "file" : "lib/Kossy/Request.pm",
-         "version" : "0.38"
+         "version" : "0.39"
       },
       "Kossy::Response" : {
          "file" : "lib/Kossy/Response.pm",
-         "version" : "0.38"
+         "version" : "0.39"
       }
    },
    "release_status" : "stable",
@@ -111,10 +115,13 @@
          "web" : "https://github.com/kazeburo/Kossy"
       }
    },
-   "version" : "0.38",
+   "version" : "0.39",
    "x_contributors" : [
       "FUJIWARA Shunichiro <fujiwara.shunichiro@gmail.com>",
       "sonots <sonots@gmail.com>",
+      "Nobuhiro Nikushi <deneb.ge@gmail.com>",
+      "Yutaka Imoto <yutaka.imoto@dena.com>",
+      "hisaichi5518 <hisaichi5518@gmail.com>",
       "Masahiro Nagano <kazeburo@gmail.com>"
    ]
 }

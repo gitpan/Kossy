@@ -40,7 +40,7 @@ Kossy - Sinatra-ish Simple and Clear web application framework
 
 # DESCRIPTION
 
-Kossy is Sinatra-ish Simple and Clear web application framework, which is based upon [Plack](https://metacpan.org/pod/Plack), [Router::Simple](https://metacpan.org/pod/Router::Simple), [Text::Xslate](https://metacpan.org/pod/Text::Xslate) and build-in Form-Validator. That's suitable for small application and rapid development.
+Kossy is Sinatra-ish Simple and Clear web application framework, which is based upon [Plack](https://metacpan.org/pod/Plack), [Router::Boom](https://metacpan.org/pod/Router::Boom), [Text::Xslate](https://metacpan.org/pod/Text::Xslate) and build-in Form-Validator. That's suitable for small application and rapid development.
 
 # Kossy class
 
@@ -217,7 +217,7 @@ This class is child class of Plack::Response
 
         post '/api' => sub {
             my ($self, $c) = @_;
-            $c->env->{kossy.request.parse_json_body} = 1;
+            $c->env->{'kossy.request.parse_json_body'} = 1;
             my val = $c->req->param('foo'); # bar
         }
 
@@ -230,6 +230,27 @@ This class is child class of Plack::Response
         #         '{"foo":"bar"}'
         #     )
         # );
+
+- $XSLATE\_CACHE, $XSLATE\_CACHE\_DIR
+
+    Change xslate's cache level and cache directory.
+
+        local $Kossy::XSLATE_CACHE = 2;
+        local $Kossy::XSLATE_CACHE_DIR = $dir;
+        my $app = MyApp::Web->psgi;
+
+    By default, $XSLATE\_CACHE is 1, $XSLATE\_CACHE\_DIR is undef. use Xslate's default.
+
+- $SECURITY\_HEADER
+
+    If disabled, Kossy does not set X-Frame-Options and X-XSS-Protection. enabled by default.
+
+        local $Kossy::SECURITY_HEADER = 0;
+        my $app = MyApp::Web->psgi;
+
+    Can not change $Kossy::SECURITY\_HEADER in your WebApp. It's need to set at build time. 
+
+    This is useful for the benchmark :-)
 
 # AUTHOR
 

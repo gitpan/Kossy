@@ -7,6 +7,7 @@ cpanfile
 lib/Kossy.pm
 lib/Kossy/Connection.pm
 lib/Kossy/Exception.pm
+lib/Kossy/Headers.pm
 lib/Kossy/Request.pm
 lib/Kossy/Response.pm
 minil.toml
@@ -25,6 +26,7 @@ t/03_parameters.t
 t/04_params.t
 t/05_cookie.t
 t/06_mount.t
+t/07_security_header.t
 t/MyApp.pm
 META.yml
 MANIFEST

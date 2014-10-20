@@ -5,7 +5,6 @@ use warnings;
 use 5.008004;
 use utf8;
 use Carp qw//;
-use Scalar::Util qw//;
 use Cwd qw//;
 use File::Basename qw//;
 use Text::Xslate;
@@ -22,9 +21,14 @@ use Kossy::Exception;
 use Kossy::Connection;
 use Kossy::Request;
 use Kossy::Response;
+use Kossy::Headers;
 
-our $VERSION = '0.38';
+our $VERSION = '0.39';
 our @EXPORT = qw/new root_dir psgi build_app _router _connect get post router filter _wrap_filter/;
+
+our $XSLATE_CACHE = 1;
+our $XSLATE_CACHE_DIR;
+our $SECURITY_HEADER = 1;
 
 sub new {
     my $class = shift;
@@ -67,6 +71,10 @@ sub build_app {
     #router
     my $router = Router::Boom->new;
     $router->add($_ => $self->_router->{$_} ) for keys %{$self->_router};
+    my $xslate_cache_local = $XSLATE_CACHE;
+    my $xslate_cache_dir_local = $XSLATE_CACHE_DIR;
+    my $security_header_local = $SECURITY_HEADER;
+    my %match_cache;
 
     #xslate
     my $fif = HTML::FillInForm::Lite->new();
@@ -83,32 +91,41 @@ sub build_app {
                 }
             }
         },
+        cache => $xslate_cache_local,
+        defined $xslate_cache_dir_local ? ( cache_dir => $xslate_cache_dir_local ) : (),
     );
 
     sub {
         my $env = shift;
-
+        $Kossy::Headers::SECURITY_HEADER = $security_header_local;
         try {
+            my $header = bless {
+                'content-type' => 'text/html; charset=UTF-8',
+                $security_header_local ? ('x-frame-options' => 'DENY') : (),
+            }, 'Kossy::Headers';
             my $c = Kossy::Connection->new({
                 tx => $tx,
                 req => Kossy::Request->new($env),
-                res => Kossy::Response->new(200, [
-                    'Content-Type' => 'text/html; charset=UTF-8',
-                    'X-Frame-Options' => 'DENY',
-                ]),
+                res => Kossy::Response->new(200, $header),
                 stash => {},
             });
+            my $method = uc($env->{REQUEST_METHOD});
+            my $cache_key = $method . '-' . $env->{PATH_INFO};
             my ($match,$args) = try {
+                if ( exists $match_cache{$cache_key} ) {
+                    return @{$match_cache{$cache_key}};
+                }
                 my $path_info = Encode::decode_utf8( $env->{PATH_INFO},  Encode::FB_CROAK | Encode::LEAVE_SRC );
                 my @match = $router->match($path_info);
                 if ( !@match ) {
                     $c->halt(404);
                 }
-
-                my $method = uc $env->{REQUEST_METHOD};
+                
                 if ( !exists $match[0]->{$method}) {
                     $c->halt(405);
                 }
+                $match_cache{$cache_key} = [$match[0]->{$method},$match[1]]
+                    if ! scalar keys %{$match[1]};
                 return ($match[0]->{$method},$match[1]);
             } catch {
                 if ( ref $_ && ref $_ eq 'Kossy::Exception' ) {
@@ -125,12 +142,12 @@ sub build_app {
                 my ($self, $c) = @_;
                 my $response;
                 my $res = $code->($self, $c);
-                Carp::croak "Undefined Response" if !$res;
+                Carp::croak "Undefined Response" if ! defined $res;
                 my $res_t = ref($res) || '';
-                if ( Scalar::Util::blessed $res && $res->isa('Kossy::Response') ) {
+                if ( $res_t eq 'Kossy::Response' ) {
                     $response = $res;
                 }
-                elsif ( Scalar::Util::blessed $res && $res->isa('Plack::Response') ) {
+                elsif ( $res_t eq 'Plack::Response' ) {
                     $response = bless $res, 'Kossy::Response';
                 }
                 elsif ( $res_t eq 'ARRAY' ) {
@@ -273,7 +290,7 @@ Kossy - Sinatra-ish Simple and Clear web application framework
 
 =head1 DESCRIPTION
 
-Kossy is Sinatra-ish Simple and Clear web application framework, which is based upon L<Plack>, L<Router::Simple>, L<Text::Xslate> and build-in Form-Validator. That's suitable for small application and rapid development.
+Kossy is Sinatra-ish Simple and Clear web application framework, which is based upon L<Plack>, L<Router::Boom>, L<Text::Xslate> and build-in Form-Validator. That's suitable for small application and rapid development.
 
 =head1 Kossy class
 
@@ -487,7 +504,7 @@ If enabled, Kossy will decode json in the request body that has "application/jso
 
   post '/api' => sub {
       my ($self, $c) = @_;
-      $c->env->{kossy.request.parse_json_body} = 1;
+      $c->env->{'kossy.request.parse_json_body'} = 1;
       my val = $c->req->param('foo'); # bar
   }
 
@@ -500,6 +517,27 @@ If enabled, Kossy will decode json in the request body that has "application/jso
   #         '{"foo":"bar"}'
   #     )
   # );
+
+=item $XSLATE_CACHE, $XSLATE_CACHE_DIR
+
+Change xslate's cache level and cache directory.
+
+  local $Kossy::XSLATE_CACHE = 2;
+  local $Kossy::XSLATE_CACHE_DIR = $dir;
+  my $app = MyApp::Web->psgi;
+
+By default, $XSLATE_CACHE is 1, $XSLATE_CACHE_DIR is undef. use Xslate's default.
+
+=item $SECURITY_HEADER
+
+If disabled, Kossy does not set X-Frame-Options and X-XSS-Protection. enabled by default.
+
+  local $Kossy::SECURITY_HEADER = 0;
+  my $app = MyApp::Web->psgi;
+
+Can not change $Kossy::SECURITY_HEADER in your WebApp. It's need to set at build time. 
+
+This is useful for the benchmark :-)
 
 =back
 
